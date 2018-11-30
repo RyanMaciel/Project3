@@ -1,16 +1,11 @@
-/** Source code example for "A Practical Introduction to Data
-    Structures and Algorithm Analysis, 3rd Edition (Java)" 
-    by Clifford A. Shaffer
-    Copyright 2008-2011 by Clifford A. Shaffer
-*/
-
-/** Edge class for Adjacency List graph representation */
 class Edge {
-  private int vert, wt;
+  public Vertex vert1;
+  public Vertex vert2;
+  public double w;
 
-  public Edge(int v, int w) // Constructor
-    { vert = v;  wt = w; }
-
-  public int vertex() { return vert; }
-  public int weight() { return wt; }
+  public Edge(Vertex v1, Vertex v2, double wp){
+  	vert1 = v1;
+  	vert2 = v2;
+  	w = wp;
+  }
 }
