@@ -83,5 +83,65 @@ class GraphLoader {
 		}
 
 		p(numIntersections);
+                
+                String startIntersection = "", endIntersection = "";
+                
+                if(args[1].equals("--show")){
+                    //TODO: Print map
+                    
+                    //Case if --show and --directions are present
+                    if(args.length > 2){
+                        startIntersection = args[3];
+                        endIntersection = args[4];
+                    }
+                }
+                //Case if only --directions is present
+                else{
+                    startIntersection = args[2];
+                    endIntersection = args[3];
+                }
+                
+                for(Vertex v : map.verts){
+                    if(v.name.equals(startIntersection)){
+                        v.d = 0;
+                        break;
+                    }
+                }
+                
+                Vertex[] vertArr = new Vertex[map.verts.size()];
+                for(int i = 0; i < vertArr.length; i++){
+                    vertArr[i] = map.verts.get(i);
+                }
+                
+                VertMinHeap unvisited = new VertMinHeap(vertArr);
+                unvisited.buildHeap();
+                Vertex v = unvisited.removeMin();
+                
+                while(unvisited.size() > 0){
+                    for(Edge e : v.adjacents){
+                        Vertex u = e.vert1;
+                        if(u.equals(v)) u = e.vert2;
+
+                        if(u.d > v.d + e.w){
+                            u.d = v.d + e.w;
+                            u.par = v;
+                        }
+                    }
+                    
+                    unvisited.buildHeap();
+                    v = unvisited.removeMin();
+                    if(v.name.equals(endIntersection)) 
+                        break;
+                }
+                
+                String route = "";
+                while(!v.name.equals(startIntersection)){
+                    route += v.name + ", ";
+                    v = v.par;
+                }
+                
+                route += v.name;
+                
+                p(route);
 	}
 }

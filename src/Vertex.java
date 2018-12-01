@@ -1,7 +1,7 @@
 import java.util.*;
 
-public class Vertex {
-    int d;
+public class Vertex{
+    double d;
     Vertex par;
     String name;
     ArrayList<Edge> adjacents = new ArrayList<Edge>();
