@@ -34,14 +34,60 @@ class GraphLoader {
 		return Math.sqrt(Math.pow(dest.lat-source.lat, 2) + Math.pow(dest.lon - source.lon, 2));
 	}
         
+
+    public static void dijkstras(Graphl map, Vertex startVert, Vertex endVert){
+    	startVert.d=0;
+        Vertex[] vertArr = new Vertex[map.verts.size()];
+        for(int i = 0; i < vertArr.length; i++){
+            vertArr[i] = map.verts.get(i);
+        }
+        
+        VertMinHeap unvisited = new VertMinHeap(vertArr);
+        unvisited.buildHeap();
+        Vertex v = unvisited.removeMin();
+        
+        while(unvisited.size() > 0){
+            for(Edge e : v.adjacents){
+                Vertex u = e.vert1;
+                if(u.equals(v)) u = e.vert2;
+
+                if(u.d > v.d + e.w){
+                    u.d = v.d + e.w;
+                    u.par = v;
+                    if(u == endVert){
+                    	p(v.name);
+                    }
+                }
+            }
+            
+            unvisited.buildHeap();
+            v = unvisited.removeMin();
+            if(v.name.equals(endVert.name)) 
+                break;
+        }
+
+    }
  	public static void main(String[] args){
-                args = new String[5];
-                args[0] = "nys.txt";
-                args[1] = "--show";
-                args[2] = "--directions";
-                args[3] = "i10";
-                args[4] = "i42";
-                
+
+ 		String startIntersection = "", endIntersection = "";
+
+ 		// If I don't initialize here the compiler complains
+        Vertex startVert = new Vertex("", 0, 0);
+        Vertex endVert = new Vertex("", 0, 0);
+
+        if(args[1].equals("--show") && args.length > 2){            
+        	//Case if --show and --directions are present
+            startIntersection = args[3];
+            endIntersection = args[4];
+        }
+        //Case if only --directions is present
+        else{
+            startIntersection = args[2];
+            endIntersection = args[3];
+        }
+
+
+        p(startIntersection);
  		GraphLoader loader = new GraphLoader();
  		Graphl map = new Graphl();
 		String fileName = args[0];
@@ -56,10 +102,13 @@ class GraphLoader {
 		// Which allows them to be accessed easily by name to build roads.
 		String nextString = in.readString();
 		int currentIndex = 0;
-                float maxLat = -1 * Float.MAX_VALUE;
-                float maxLon = -1 * Float.MAX_VALUE;
-                float minLon = Float.MAX_VALUE;
-                float minLat = Float.MAX_VALUE;
+
+        float maxLat = -1 * Float.MAX_VALUE;
+        float maxLon = -1 * Float.MAX_VALUE;
+        float minLon = Float.MAX_VALUE;
+        float minLat = Float.MAX_VALUE;
+
+        // Populate from the intersections.
 		while(nextString.equals("r") == false){
 			if(nextString.equals("i")){
 				String intersectionName = in.readString();
@@ -68,7 +117,16 @@ class GraphLoader {
 				intersections.put(intersectionName, loader.new Node(intersectionName, lat, lon, currentIndex));
 
 				// Add vertex
-				map.addVert(new Vertex(intersectionName, lat, lon));
+				Vertex newVert = new Vertex(intersectionName, lat, lon);
+				if(intersectionName.equals(startIntersection)){
+					startVert = newVert;
+					p("start");
+				}
+				else if(intersectionName.equals(endIntersection)){
+					endVert = newVert;
+					p("end");
+				}
+				map.addVert(newVert);
                                 if(maxLat < lat) maxLat = lat;
                                 if(maxLon < lon) maxLon = lon;
                                 if(minLat > lat) minLat = lat;
@@ -77,6 +135,9 @@ class GraphLoader {
 			}
 			nextString = in.readString();
 		}
+
+
+		// Populate from roads.
 		try{
 			while(nextString.equals("r")){
 				String roadName = in.readString();
@@ -99,65 +160,28 @@ class GraphLoader {
 		}
 
 		p(numIntersections);
-                
-                String startIntersection = "", endIntersection = "";
-                
-                if(args[1].equals("--show")){
-                    new DrawMap(map.verts, maxLon, maxLat, minLon, minLat);
-                    
-                    //Case if --show and --directions are present
-                    if(args.length > 2){
-                        startIntersection = args[3];
-                        endIntersection = args[4];
-                    }
-                }
-                //Case if only --directions is present
-                else{
-                    startIntersection = args[2];
-                    endIntersection = args[3];
-                }
-                
-                for(Vertex v : map.verts){
-                    if(v.name.equals(startIntersection)){
-                        v.d = 0;
-                        break;
-                    }
-                }
-                
-                Vertex[] vertArr = new Vertex[map.verts.size()];
-                for(int i = 0; i < vertArr.length; i++){
-                    vertArr[i] = map.verts.get(i);
-                }
-                
-                VertMinHeap unvisited = new VertMinHeap(vertArr);
-                unvisited.buildHeap();
-                Vertex v = unvisited.removeMin();
-                
-                while(unvisited.size() > 0){
-                    for(Edge e : v.adjacents){
-                        Vertex u = e.vert1;
-                        if(u.equals(v)) u = e.vert2;
 
-                        if(u.d > v.d + e.w){
-                            u.d = v.d + e.w;
-                            u.par = v;
-                        }
-                    }
-                    
-                    unvisited.buildHeap();
-                    v = unvisited.removeMin();
-                    if(v.name.equals(endIntersection)) 
-                        break;
-                }
-                
-                String route = "";
-                while(v.par != null){
-                    route += v.name + ", ";
-                    v = v.par;
-                }
-                
-                route += v.name;
-                
-                p(route);
+		dijkstras(map, startVert, endVert);
+
+        String route = "";
+        Vertex traceVert = endVert;
+        ArrayList<Vertex> pathVerts = new ArrayList<Vertex>();
+        pathVerts.add(traceVert);
+        while(traceVert.par != null){
+            route += traceVert.name + ", ";
+            traceVert = traceVert.par;
+            pathVerts.add(traceVert);
+
+        }
+        
+        route += traceVert.name;
+        
+        if(args[1].equals("--show")){
+			DrawMap mapRenderer = new DrawMap(map.verts, maxLon, maxLat, minLon, minLat);
+			mapRenderer.drawPath(pathVerts);
+		}
+
+
+        p("Route:" + route);
 	}
 }
