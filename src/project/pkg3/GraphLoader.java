@@ -5,11 +5,11 @@ package project.pkg3;
 import java.util.*;
 class GraphLoader {
 	class Node{
-		public float lat;
-		public float lon;
+		public double lat;
+		public double lon;
 		public String name;
 		public int index;
-		public Node(String nameP, float latP, float lonP, int indexP){
+		public Node(String nameP, double latP, double lonP, int indexP){
 			name = nameP;
 			lat = latP;
 			lon = lonP;
@@ -30,9 +30,23 @@ class GraphLoader {
 	public static void p(Object a){
 		System.out.println(a);
 	}
-	public static double distance(Node source, Node dest){
-		return Math.sqrt(Math.pow(dest.lat-source.lat, 2) + Math.pow(dest.lon - source.lon, 2));
-	}
+	// Haversine distance
+	// https://rosettacode.org/wiki/Haversine_formula#Java
+	public static final double R = 6372.8; // In kilometers
+    public static double distance(Node source, Node dest) {
+    	double lat1 = source.lat;
+    	double lat2 = dest.lat;
+    	double lon1 = source.lon;
+    	double lon2 = dest.lon;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+ 
+        double a = Math.pow(Math.sin(dLat / 2),2) + Math.pow(Math.sin(dLon / 2),2) * Math.cos(lat1) * Math.cos(lat2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        return R * c;
+    }
         
 
     public static void dijkstras(Graphl map, Vertex startVert, Vertex endVert){
@@ -120,11 +134,9 @@ class GraphLoader {
 				Vertex newVert = new Vertex(intersectionName, lat, lon);
 				if(intersectionName.equals(startIntersection)){
 					startVert = newVert;
-					p("start");
 				}
 				else if(intersectionName.equals(endIntersection)){
 					endVert = newVert;
-					p("end");
 				}
 				map.addVert(newVert);
                                 if(maxLat < lat) maxLat = lat;
