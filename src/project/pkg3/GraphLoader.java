@@ -3,6 +3,7 @@ package project.pkg3;
 
 /** Class to read in road data and create a graph */
 import java.util.*;
+
 class GraphLoader {
 	class Node{
 		public double lat;
@@ -68,16 +69,12 @@ class GraphLoader {
                 if(u.d > v.d + e.w){
                     u.d = v.d + e.w;
                     u.par = v;
-                    if(u == endVert){
-                    	p(v.name);
-                    }
+                    
+                    unvisited.buildHeap();
+
                 }
             }
-            
-            unvisited.buildHeap();
             v = unvisited.removeMin();
-            if(v.name.equals(endVert.name)) 
-                break;
         }
 
     }
@@ -171,10 +168,7 @@ class GraphLoader {
 			
 		}
 
-		p(numIntersections);
-
 		dijkstras(map, startVert, endVert);
-
         String route = "";
         Vertex traceVert = endVert;
         ArrayList<Vertex> pathVerts = new ArrayList<Vertex>();
