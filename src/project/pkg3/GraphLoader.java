@@ -1,10 +1,26 @@
+/**
+* Name: Jonah Davis and Ryan Maciel, 
+* NetID: rmaciel2
+* Assignment: Project 3
+*/
 package project.pkg3;
 
 
 /** Class to read in road data and create a graph */
 import java.util.*;
 
+
+/**
+* The main class for the project. Should be run from the command line and takes
+* in command line arguements in accordence with the project description. Parses
+* variables from the input file, finds the shortest path and uses the DrawMap
+* class to render it.
+*/
 class GraphLoader {
+
+	/**
+	* A class to represent an interection (this is different from the Vertex class.)
+	*/
 	class Node{
 		public double lat;
 		public double lon;
@@ -18,6 +34,10 @@ class GraphLoader {
 		}
 
 	}
+
+	/**
+	* A class to represent roads (different from edge classes).
+	*/
 	class Road{
 		public Node source;
 		public Node dest;
@@ -28,98 +48,106 @@ class GraphLoader {
 			name = nameP;
 		}
 	}
-	public static void p(Object a){
-		System.out.println(a);
-	}
-	// Haversine distance
-	// https://rosettacode.org/wiki/Haversine_formula#Java
+
+
+	/**
+	* Haversine distance
+	* https://rosettacode.org/wiki/Haversine_formula#Java
+	*/
 	public static final double R = 6372.8; // In kilometers
-    public static double distance(Node source, Node dest) {
-    	double lat1 = source.lat;
-    	double lat2 = dest.lat;
-    	double lon1 = source.lon;
-    	double lon2 = dest.lon;
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-        lat1 = Math.toRadians(lat1);
-        lat2 = Math.toRadians(lat2);
+	public static double distance(Node source, Node dest) {
+		double lat1 = source.lat;
+		double lat2 = dest.lat;
+		double lon1 = source.lon;
+		double lon2 = dest.lon;
+		double dLat = Math.toRadians(lat2 - lat1);
+		double dLon = Math.toRadians(lon2 - lon1);
+		lat1 = Math.toRadians(lat1);
+		lat2 = Math.toRadians(lat2);
  
-        double a = Math.pow(Math.sin(dLat / 2),2) + Math.pow(Math.sin(dLon / 2),2) * Math.cos(lat1) * Math.cos(lat2);
-        double c = 2 * Math.asin(Math.sqrt(a));
-        return R * c;
-    }
-        
+		double a = Math.pow(Math.sin(dLat / 2),2) + Math.pow(Math.sin(dLon / 2),2) * Math.cos(lat1) * Math.cos(lat2);
+		double c = 2 * Math.asin(Math.sqrt(a));
+		return R * c;
+	}
+		
 
-    public static void dijkstras(Graphl map, Vertex startVert, Vertex endVert){
-    	startVert.d=0;
-        Vertex[] vertArr = new Vertex[map.verts.size()];
-        for(int i = 0; i < vertArr.length; i++){
-            vertArr[i] = map.verts.get(i);
-        }
-        
-        VertMinHeap unvisited = new VertMinHeap(vertArr);
-        unvisited.buildHeap();
-        Vertex v = unvisited.removeMin();
-        
-        while(unvisited.size() > 0){
-            for(Edge e : v.adjacents){
-                Vertex u = e.vert1;
-                if(u.equals(v)) u = e.vert2;
+	/**
+	* Implementation fo dijkstra's algorithm as discussed in class.
+	*/
+	public static void dijkstras(Graphl map, Vertex startVert, Vertex endVert){
+		startVert.d=0;
+		Vertex[] vertArr = new Vertex[map.verts.size()];
+		for(int i = 0; i < vertArr.length; i++){
+			vertArr[i] = map.verts.get(i);
+		}
+		
+		VertMinHeap unvisited = new VertMinHeap(vertArr);
+		unvisited.buildHeap();
+		Vertex v = unvisited.removeMin();
+		
+		while(unvisited.size() > 0){
+			for(Edge e : v.adjacents){
+				Vertex u = e.vert1;
+				if(u.equals(v)) u = e.vert2;
 
-                if(u.d > v.d + e.w){
-                    u.d = v.d + e.w;
-                    u.par = v;
-                    
-                    unvisited.buildHeap();
+				if(u.d > v.d + e.w){
+					u.d = v.d + e.w;
+					u.par = v;
+					
 
-                }
-            }
-            v = unvisited.removeMin();
-        }
+				}
+			}
+			unvisited.buildHeap();
+			v = unvisited.removeMin();
+		}
 
-    }
- 	public static void main(String[] args){
+	}
+	public static void main(String[] args){
 
- 		String startIntersection = "", endIntersection = "";
+		String startIntersection = "", endIntersection = "";
 
- 		// If I don't initialize here the compiler complains
-        Vertex startVert = new Vertex("", 0, 0);
-        Vertex endVert = new Vertex("", 0, 0);
-
-        if(args[1].equals("--show") && args.length > 2){            
-        	//Case if --show and --directions are present
-            startIntersection = args[3];
-            endIntersection = args[4];
-        }
-        //Case if only --directions is present
-        else{
-            startIntersection = args[2];
-            endIntersection = args[3];
-        }
+		// If I don't initialize here the compiler complains
+		Vertex startVert = new Vertex("", 0, 0);
+		Vertex endVert = new Vertex("", 0, 0);
 
 
-        p(startIntersection);
- 		GraphLoader loader = new GraphLoader();
- 		Graphl map = new Graphl();
+		// Parse command line arguments.
+		if(args[1].equals("--show") && args.length > 2){            
+			//Case if --show and --directions are present
+			startIntersection = args[3];
+			endIntersection = args[4];
+		}
+		//Case if only --directions is present
+		else{
+			startIntersection = args[2];
+			endIntersection = args[3];
+		}
+
+
+		// We only need to initialize this to access the embedded node and rode classes.
+		GraphLoader loader = new GraphLoader();
+		Graphl map = new Graphl();
 		String fileName = args[0];
 		In in = new In(fileName);
 
 		int numIntersections = 0;
-		//Graph map;
 			
 		HashMap<String, Node> intersections = new HashMap<String, Node>();
 
-		// Handle all of the intersections, adding them to the above hashmap
-		// Which allows them to be accessed easily by name to build roads.
+		/**
+		* Handle all of the intersections, adding them to the above hashmap
+		* Which allows them to be accessed easily by name to build roads.
+		*/
 		String nextString = in.readString();
 		int currentIndex = 0;
 
-        float maxLat = -1 * Float.MAX_VALUE;
-        float maxLon = -1 * Float.MAX_VALUE;
-        float minLon = Float.MAX_VALUE;
-        float minLat = Float.MAX_VALUE;
+		// keep track of the farthest vertices of the graph for rendering.
+		float maxLat = -1 * Float.MAX_VALUE;
+		float maxLon = -1 * Float.MAX_VALUE;
+		float minLon = Float.MAX_VALUE;
+		float minLat = Float.MAX_VALUE;
 
-        // Populate from the intersections.
+		// Populate from the intersections.
 		while(nextString.equals("r") == false){
 			if(nextString.equals("i")){
 				String intersectionName = in.readString();
@@ -136,10 +164,10 @@ class GraphLoader {
 					endVert = newVert;
 				}
 				map.addVert(newVert);
-                                if(maxLat < lat) maxLat = lat;
-                                if(maxLon < lon) maxLon = lon;
-                                if(minLat > lat) minLat = lat;
-                                if(minLon > lon) minLon = lon;
+				if(maxLat < lat) maxLat = lat;
+				if(maxLon < lon) maxLon = lon;
+				if(minLat > lat) minLat = lat;
+				if(minLon > lon) minLon = lon;
 				currentIndex++;
 			}
 			nextString = in.readString();
@@ -155,10 +183,6 @@ class GraphLoader {
 				Node source = intersections.get(sourceName);
 				Node dest = intersections.get(destName);
 				loader.new Road(source, dest, roadName);
-				/**
-					Add edge here:
-					graph.addEdge(source.index, dest.index, distance(source, dest))
-				*/
 
 				map.addEdge(source.index, dest.index, distance(source, dest));
 
@@ -168,26 +192,23 @@ class GraphLoader {
 			
 		}
 
+		// Find the sortest path.
 		dijkstras(map, startVert, endVert);
-        String route = "";
-        Vertex traceVert = endVert;
-        ArrayList<Vertex> pathVerts = new ArrayList<Vertex>();
-        pathVerts.add(traceVert);
-        while(traceVert.par != null){
-            route += traceVert.name + ", ";
-            traceVert = traceVert.par;
-            pathVerts.add(traceVert);
 
-        }
-        
-        route += traceVert.name;
-        
-        if(args[1].equals("--show")){
+		// Shortest path is embedded in the parents of the end vert.
+		Vertex traceVert = endVert;
+		ArrayList<Vertex> pathVerts = new ArrayList<Vertex>();
+		pathVerts.add(traceVert);
+		while(traceVert.par != null){
+			traceVert = traceVert.par;
+			pathVerts.add(traceVert);
+
+		}
+		
+		// Render the map and the path if the user indicates.
+		if(args[1].equals("--show")){
 			DrawMap mapRenderer = new DrawMap(map.verts, maxLon, maxLat, minLon, minLat);
 			mapRenderer.drawPath(pathVerts);
 		}
-
-
-        p("Route:" + route);
 	}
 }

@@ -1,3 +1,9 @@
+/**
+* Name: Jonah Davis and Ryan Maciel, 
+* NetID: rmaciel2
+* Assignment: Project 3
+*/
+
 package project.pkg3;
 
 import java.util.*;
