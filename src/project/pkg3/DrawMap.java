@@ -1,6 +1,7 @@
 package project.pkg3;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import javax.swing.JFrame;
 
@@ -32,11 +33,13 @@ public class DrawMap extends Canvas
         if(vertPath != null) {
 
             g.setColor(Color.RED);
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setStroke(new BasicStroke(2));
             for(int i = 0; i < vertPath.size()-1; i++){
                 Vertex vert1 = vertPath.get(i);
                 Vertex vert2 = vertPath.get(i+1);
-                g.drawLine((int)((coordWidth - maxLon + vert1.lon) / coordWidth * w * .9 + (.05 * w)), (int)((maxLat - vert1.lat) / coordHeight * h * .9 + (.05 * h)), 
-                           (int)((coordWidth - maxLon + vert2.lon) / coordWidth * w * .9 + (.05 * w)), (int)((maxLat - vert2.lat) / coordHeight * h * .9 + (.05 * h)));
+                g2.draw(new Line2D.Float((int)((coordWidth - maxLon + vert1.lon) / coordWidth * w * .9 + (.05 * w)), (int)((maxLat - vert1.lat) / coordHeight * h * .9 + (.05 * h)), 
+                           (int)((coordWidth - maxLon + vert2.lon) / coordWidth * w * .9 + (.05 * w)), (int)((maxLat - vert2.lat) / coordHeight * h * .9 + (.05 * h))));
                 
             }
         }

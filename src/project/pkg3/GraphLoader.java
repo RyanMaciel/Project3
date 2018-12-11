@@ -3,6 +3,7 @@ package project.pkg3;
 
 /** Class to read in road data and create a graph */
 import java.util.*;
+
 class GraphLoader {
 	class Node{
 		public double lat;
@@ -68,19 +69,31 @@ class GraphLoader {
                 if(u.d > v.d + e.w){
                     u.d = v.d + e.w;
                     u.par = v;
-                    if(u == endVert){
-                    	p(v.name);
-                    }
+                    
+                    unvisited.buildHeap();
+
                 }
             }
-            
-            unvisited.buildHeap();
             v = unvisited.removeMin();
-            if(v.name.equals(endVert.name)) 
-                break;
         }
 
     }
+    // Another modified dfs to find the number of reachable verts (hahhaahhahahahahah DRY coding amiright????)
+	public static int reachableCount(Vertex startVert, Vertex parentVert){
+		startVert.visited = true;
+		int sumWeight = 0;
+		for(Edge e : startVert.adjacents){
+			if(e.otherVert(startVert) != parentVert){
+				Vertex v = e.otherVert(startVert);
+				if(v.visited == false){
+					sumWeight += reachableCount(v, startVert);
+				} else{
+					sumWeight += 1;
+				}
+			}
+		}
+		return sumWeight;
+	}
  	public static void main(String[] args){
 
  		String startIntersection = "", endIntersection = "";
@@ -171,10 +184,7 @@ class GraphLoader {
 			
 		}
 
-		p(numIntersections);
-
 		dijkstras(map, startVert, endVert);
-
         String route = "";
         Vertex traceVert = endVert;
         ArrayList<Vertex> pathVerts = new ArrayList<Vertex>();

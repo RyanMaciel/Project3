@@ -8,13 +8,14 @@ public class Vertex{
     String name;
     float lat;
     float lon;
+    boolean visited = false;
     ArrayList<Edge> adjacents = new ArrayList<Edge>();
     
     /**
      * Default class constructor.
      */
     public Vertex(String nameP, float latitude, float longitude){
-        d = Integer.MAX_VALUE;
+        d = Double.MAX_VALUE;
         par = null;
         name = nameP;
         lat = latitude;
