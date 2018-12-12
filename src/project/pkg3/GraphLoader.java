@@ -99,6 +99,8 @@ class GraphLoader {
 			}
 			unvisited.buildHeap();
 			v = unvisited.removeMin();
+			if(v.name.equals(endVert.name)) 
+				break;
 		}
 
 	}
@@ -110,17 +112,24 @@ class GraphLoader {
 		Vertex startVert = new Vertex("", 0, 0);
 		Vertex endVert = new Vertex("", 0, 0);
 
-
-		// Parse command line arguments.
-		if(args[1].equals("--show") && args.length > 2){            
-			//Case if --show and --directions are present
-			startIntersection = args[3];
-			endIntersection = args[4];
+		// Determine if we should show map.
+		boolean showMap = false;
+		boolean calcDirections = false;
+		for(String s : args){
+			if(s.equals("--show")){
+				showMap = true;
+				break;
+			}
 		}
 		//Case if only --directions is present
-		else{
+		if(args[1].equals("--directions")){
+			calcDirections = true;
 			startIntersection = args[2];
 			endIntersection = args[3];
+		} else if(args.length > 2 && args[2].equals("--directions")){
+			calcDirections = true;
+			startIntersection = args[3];
+			endIntersection = args[4];
 		}
 
 
@@ -192,23 +201,35 @@ class GraphLoader {
 			
 		}
 
-		// Find the sortest path.
-		dijkstras(map, startVert, endVert);
-
-		// Shortest path is embedded in the parents of the end vert.
-		Vertex traceVert = endVert;
-		ArrayList<Vertex> pathVerts = new ArrayList<Vertex>();
-		pathVerts.add(traceVert);
-		while(traceVert.par != null){
-			traceVert = traceVert.par;
-			pathVerts.add(traceVert);
-
-		}
-		
 		// Render the map and the path if the user indicates.
-		if(args[1].equals("--show")){
+		
+		ArrayList<Vertex> pathVerts = new ArrayList<Vertex>();
+		if(calcDirections){
+			// Find the sortest path.
+			dijkstras(map, startVert, endVert);
+
+			String route = "";
+
+			// Shortest path is embedded in the parents of the end vert.
+			Vertex traceVert = endVert;
+			pathVerts.add(traceVert);
+			while(traceVert.par != null){
+				traceVert = traceVert.par;
+				pathVerts.add(traceVert);
+			}
+
+			// Reverse the order of the path to print out.
+			for(int i = pathVerts.size()-1; i >= 0; i--){
+				route += ", " + pathVerts.get(i).name;
+			}
+
+			System.out.println("Route:" + route);
+		}
+		if(showMap){
 			DrawMap mapRenderer = new DrawMap(map.verts, maxLon, maxLat, minLon, minLat);
-			mapRenderer.drawPath(pathVerts);
+			if(calcDirections){
+				mapRenderer.drawPath(pathVerts);
+			}
 		}
 	}
 }

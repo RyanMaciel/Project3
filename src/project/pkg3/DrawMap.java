@@ -13,12 +13,14 @@ import javax.swing.JFrame;
 
 public class DrawMap extends Canvas
 {
+    JFrame win;
     ArrayList<Vertex> verts;
     float maxLon, maxLat, minLon, minLat;
     ArrayList<Vertex> vertPath;
     
     public void drawPath(ArrayList<Vertex> verts){
         vertPath = verts;
+        win.repaint();
     }
 
     public void paint(Graphics g){
@@ -57,7 +59,7 @@ public class DrawMap extends Canvas
         maxLat = maxLati;
         minLon = minLong;
         minLat = minLati;
-        JFrame win = new JFrame("Map");
+        win = new JFrame("Map");
         win.setSize(800, 600);
         win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         win.add(this);
