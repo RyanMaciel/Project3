@@ -94,15 +94,7 @@ class GraphLoader {
                     u.d = v.d + e.w;
                     u.par = v;
                     
-                    unvisited.buildHeap();
-
-                }
-            }
-            v = unvisited.removeMin();
-        }
-
-				}
-			}
+                    
 			unvisited.buildHeap();
 			v = unvisited.removeMin();
 			if(v.name.equals(endVert.name)) 
@@ -110,6 +102,9 @@ class GraphLoader {
 		}
 
 	}
+                }
+        }
+        
 	public static void main(String[] args){
 
 		String startIntersection = "", endIntersection = "";
@@ -217,12 +212,17 @@ class GraphLoader {
             traceVert = traceVert.par;
             pathVerts.add(traceVert);
 
-			// Reverse the order of the path to print out.
-			for(int i = pathVerts.size()-1; i >= 0; i--){
-				route += ", " + pathVerts.get(i).name;
-			}
+			if(pathVerts.size() == 1){
+                            System.out.println("No path found");
+                        }
+                        else{
+                            // Reverse the order of the path to print out.
+                            for(int i = pathVerts.size()-1; i >= 0; i--){
+                                    route += ", " + pathVerts.get(i).name;
+                            }
 
-			System.out.println("Route:" + route);
+                            System.out.println("Route:" + route);
+                        }
 		}
 		if(showMap){
 			DrawMap mapRenderer = new DrawMap(map.verts, maxLon, maxLat, minLon, minLat);

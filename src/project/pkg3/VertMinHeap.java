@@ -7,7 +7,7 @@ class VertMinHeap{
     
     /**
      * Class constructor
-     * @param h an array of CharHuffTrees to be built into a heap
+     * @param h an array of Vertices to be built into a heap
      * @param m the max size of the heap
      * @param s the current size of the heap
      */

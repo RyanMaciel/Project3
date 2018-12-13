@@ -10,7 +10,9 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import javax.swing.JFrame;
-
+/**
+ * Class to draw the map.
+ */
 public class DrawMap extends Canvas
 {
     JFrame win;
@@ -18,11 +20,19 @@ public class DrawMap extends Canvas
     float maxLon, maxLat, minLon, minLat;
     ArrayList<Vertex> vertPath;
     
+    /**
+     * Sets the path to be highlighted
+     * @param verts the vertices along the highlighted path
+     */
     public void drawPath(ArrayList<Vertex> verts){
         vertPath = verts;
         win.repaint();
     }
-
+    
+    /**
+     * Draws the map.
+     * @param g 
+     */
     public void paint(Graphics g){
         int h = getHeight();
         int w = getWidth();
@@ -31,6 +41,7 @@ public class DrawMap extends Canvas
         
         g.setColor(Color.BLACK);
         
+        //Draws each edge
         for(Vertex v : verts){
             for(Edge e : v.adjacents){
                 g.drawLine((int)((coordWidth - maxLon + e.vert1.lon) / coordWidth * w * .9 + (.05 * w)), (int)((maxLat - e.vert1.lat) / coordHeight * h * .9 + (.05 * h)), 
@@ -38,6 +49,7 @@ public class DrawMap extends Canvas
                 
             }
         }
+        //Draws the shortest path, if one has been found
         if(vertPath != null) {
 
             g.setColor(Color.RED);
@@ -53,6 +65,14 @@ public class DrawMap extends Canvas
         }
     }
     
+    /**
+     * Class constructor.
+     * @param arr the array of vertices that make up the map
+     * @param maxLong the max longitude
+     * @param maxLati the max latitude
+     * @param minLong the min longitude
+     * @param minLati the min latitude
+     */
     public DrawMap(ArrayList<Vertex> arr, float maxLong, float maxLati, float minLong, float minLati){
         verts = arr;
         maxLon = maxLong;

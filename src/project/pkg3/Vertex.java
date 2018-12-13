@@ -8,6 +8,11 @@ package project.pkg3;
 
 import java.util.*;
 
+/**
+ * Class that stores information about a Vertex, including its position, name, distance 
+ * from a source, and parent on the shortest path.
+ * @author onahj
+ */
 public class Vertex{
     double d;
     Vertex par;
@@ -37,7 +42,11 @@ public class Vertex{
         par = parent;
         name = nameP;
     }
-
+    
+    /**
+     * Add an edge to a neighboring Vertex
+     * @param adjEdge the Edge to be added
+     */
     public void addAdjacentEdge(Edge adjEdge){
         adjacents.add(adjEdge);
     }
