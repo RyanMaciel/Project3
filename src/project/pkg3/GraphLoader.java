@@ -3,11 +3,10 @@
 * NetID: jdavis65 rmaciel2
 * Assignment: Project 3
 */
-package project.pkg3;
-
 
 /** Class to read in road data and create a graph */
 import java.util.*;
+package project.pkg3;
 
 
 /**
@@ -93,17 +92,14 @@ class GraphLoader {
                 if(u.d > v.d + e.w){
                     u.d = v.d + e.w;
                     u.par = v;
-                    
-                    
-			unvisited.buildHeap();
-			v = unvisited.removeMin();
-			if(v.name.equals(endVert.name)) 
-				break;
+                	unvisited.buildHeap();
+				}
+			}
+		v = unvisited.removeMin();
+		if(v.name.equals(endVert.name)) 
+			break;
 		}
-
-	}
-                }
-        }
+    }
         
 	public static void main(String[] args){
 
